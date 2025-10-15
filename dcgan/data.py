@@ -19,3 +19,14 @@ SEG_XY = {"a": ((.2, .1), (.8, .1)), "b": ((.8, .1), (.8, .5)), "c": ((.8, .5), 
           "e": ((.2, .5), (.2, .9)), "f": ((.2, .1), (.2, .5)), "g": ((.2, .5), (.8, .5))}
 
 
+def _open(path):
+    return gzip.open(path, "rb") if path.endswith(".gz") else open(path, "rb")
+
+
+def _find(directory, stem):
+    for ext in ("", ".gz"):
+        p = os.path.join(directory, stem + ext)
+        if os.path.exists(p): return p
+    raise FileNotFoundError(f"{stem}[.gz] not found in {directory}")
+
+
