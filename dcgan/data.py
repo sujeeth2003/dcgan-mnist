@@ -41,3 +41,18 @@ def load_mnist(directory):
     return torch.from_numpy(x.astype(np.float32) / 127.5 - 1.0), torch.from_numpy(y.astype(np.int64))
 
 
+def _draw(digit, rng, size=28):
+    img = np.zeros((size, size), np.float32)
+    w = rng.uniform(1.2, 2.4); slant = rng.uniform(-0.25, 0.25)
+    ox, oy = rng.uniform(-2, 2), rng.uniform(-2, 2); scale = rng.uniform(0.75, 0.95) * size
+    yy, xx = np.mgrid[0:size, 0:size].astype(np.float32)
+    for s in SEGMENTS[digit]:
+        (x0, y0), (x1, y1) = SEG_XY[s]
+        p0 = np.array([(x0 + slant * (y0 - .5)) * scale + ox + (size - scale) / 2, y0 * scale + oy + (size - scale) / 2])
+        p1 = np.array([(x1 + slant * (y1 - .5)) * scale + ox + (size - scale) / 2, y1 * scale + oy + (size - scale) / 2])
+        d = p1 - p0; L2 = float(d @ d) + 1e-6
+        t = np.clip(((xx - p0[0]) * d[0] + (yy - p0[1]) * d[1]) / L2, 0, 1)
+        dist = np.hypot(xx - (p0[0] + t * d[0]), yy - (p0[1] + t * d[1]))
+        img = np.maximum(img, np.clip(1.5 - dist / (w / 2), 0, 1))       # soft-edged stroke
+    return np.clip(img + rng.normal(0, 0.03, img.shape), 0, 1)
+
