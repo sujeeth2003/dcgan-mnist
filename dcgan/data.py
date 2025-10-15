@@ -30,3 +30,14 @@ def _find(directory, stem):
     raise FileNotFoundError(f"{stem}[.gz] not found in {directory}")
 
 
+def load_mnist(directory):
+    with _open(_find(directory, "train-images-idx3-ubyte")) as f:
+        magic, n, r, c = struct.unpack(">IIII", f.read(16))
+        assert magic == 2051, "not an IDX image file"
+        x = np.frombuffer(f.read(), np.uint8).reshape(n, 1, r, c)
+    with _open(_find(directory, "train-labels-idx1-ubyte")) as f:
+        magic, n2 = struct.unpack(">II", f.read(8)); assert magic == 2049 and n2 == n
+        y = np.frombuffer(f.read(), np.uint8)
+    return torch.from_numpy(x.astype(np.float32) / 127.5 - 1.0), torch.from_numpy(y.astype(np.int64))
+
+
