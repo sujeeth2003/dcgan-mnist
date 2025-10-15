@@ -56,3 +56,9 @@ def _draw(digit, rng, size=28):
         img = np.maximum(img, np.clip(1.5 - dist / (w / 2), 0, 1))       # soft-edged stroke
     return np.clip(img + rng.normal(0, 0.03, img.shape), 0, 1)
 
+
+def synthetic_digits(n=6000, seed=0):
+    rng = np.random.default_rng(seed)
+    y = rng.integers(0, 10, n)
+    x = np.stack([_draw(int(d), rng) for d in y])[:, None]
+    return torch.from_numpy((x * 2 - 1).astype(np.float32)), torch.from_numpy(y.astype(np.int64))
