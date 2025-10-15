@@ -13,3 +13,9 @@ import struct
 import numpy as np
 import torch
 
+SEGMENTS = {0: "abcdef", 1: "bc", 2: "abdeg", 3: "abcdg", 4: "bcfg", 5: "acdfg", 6: "acdefg", 7: "abc", 8: "abcdefg", 9: "abcdfg"}
+# segment endpoints on a 0..1 grid (x right, y down)
+SEG_XY = {"a": ((.2, .1), (.8, .1)), "b": ((.8, .1), (.8, .5)), "c": ((.8, .5), (.8, .9)), "d": ((.2, .9), (.8, .9)),
+          "e": ((.2, .5), (.2, .9)), "f": ((.2, .1), (.2, .5)), "g": ((.2, .5), (.8, .5))}
+
+
