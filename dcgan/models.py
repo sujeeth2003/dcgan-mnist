@@ -7,3 +7,10 @@ import torch
 from torch import nn
 
 
+def init_weights(m):
+    if isinstance(m, (nn.Conv2d, nn.ConvTranspose2d)):
+        nn.init.normal_(m.weight, 0.0, 0.02)
+    elif isinstance(m, nn.BatchNorm2d):
+        nn.init.normal_(m.weight, 1.0, 0.02); nn.init.zeros_(m.bias)
+
+
