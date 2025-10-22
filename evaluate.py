@@ -14,3 +14,12 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 
+from dcgan.data import load_mnist, synthetic_digits
+from train import train
+
+
+def make_classifier():
+    return nn.Sequential(nn.Conv2d(1, 32, 3, padding=1), nn.ReLU(), nn.MaxPool2d(2), nn.Conv2d(32, 64, 3, padding=1), nn.ReLU(),
+                         nn.MaxPool2d(2), nn.Flatten(), nn.Linear(64 * 7 * 7, 10))
+
+
