@@ -14,3 +14,17 @@ def init_weights(m):
         nn.init.normal_(m.weight, 1.0, 0.02); nn.init.zeros_(m.bias)
 
 
+class Generator(nn.Module):
+    """z (B, nz, 1, 1) -> image (B, 1, 28, 28) in [-1, 1].   1x1 -> 7x7 -> 14x14 -> 28x28"""
+
+    def __init__(self, nz=100, ngf=64):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.ConvTranspose2d(nz, ngf * 4, 7, 1, 0, bias=False), nn.BatchNorm2d(ngf * 4), nn.ReLU(True),         # 7x7
+            nn.ConvTranspose2d(ngf * 4, ngf * 2, 4, 2, 1, bias=False), nn.BatchNorm2d(ngf * 2), nn.ReLU(True),    # 14x14
+            nn.ConvTranspose2d(ngf * 2, 1, 4, 2, 1, bias=False), nn.Tanh())                                       # 28x28
+        self.apply(init_weights)
+
+    def forward(self, z):
+        return self.net(z)
+
