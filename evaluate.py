@@ -23,3 +23,14 @@ def make_classifier():
                          nn.MaxPool2d(2), nn.Flatten(), nn.Linear(64 * 7 * 7, 10))
 
 
+def fit_classifier(x, y, epochs=4):
+    torch.manual_seed(0)
+    clf, opt = make_classifier(), None
+    opt = torch.optim.Adam(clf.parameters(), 1e-3)
+    for _ in range(epochs):
+        perm = torch.randperm(len(x))
+        for i in range(0, len(x), 128):
+            idx = perm[i:i + 128]; opt.zero_grad(); F.cross_entropy(clf(x[idx]), y[idx]).backward(); opt.step()
+    return clf.eval()
+
+
