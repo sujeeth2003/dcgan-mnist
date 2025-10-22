@@ -28,3 +28,17 @@ class Generator(nn.Module):
     def forward(self, z):
         return self.net(z)
 
+
+class Discriminator(nn.Module):
+    """image (B, 1, 28, 28) -> logit (B,).  28 -> 14 -> 7 -> 1"""
+
+    def __init__(self, ndf=64):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Conv2d(1, ndf, 4, 2, 1, bias=False), nn.LeakyReLU(0.2, True),                                      # 14x14 (no BN on input layer)
+            nn.Conv2d(ndf, ndf * 2, 4, 2, 1, bias=False), nn.BatchNorm2d(ndf * 2), nn.LeakyReLU(0.2, True),       # 7x7
+            nn.Conv2d(ndf * 2, 1, 7, 1, 0, bias=False))                                                           # 1x1 logit
+        self.apply(init_weights)
+
+    def forward(self, x):
+        return self.net(x).view(-1)
