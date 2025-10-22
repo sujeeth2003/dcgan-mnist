@@ -61,3 +61,22 @@ def train(x, epochs=20, batch=128, nz=100, lr=2e-4, seed=0, out_dir=None, log=pr
     G.eval()
     return G, D, hist
 
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--data", choices=["synthetic", "mnist"], default="synthetic")
+    ap.add_argument("--mnist-dir", default="data")
+    ap.add_argument("--n", type=int, default=6000, help="synthetic dataset size")
+    ap.add_argument("--epochs", type=int, default=20)
+    ap.add_argument("--out", default="samples")
+    a = ap.parse_args()
+    os.makedirs(a.out, exist_ok=True)
+    x, y = load_mnist(a.mnist_dir) if a.data == "mnist" else synthetic_digits(a.n)
+    print(f"dataset: {a.data}, {len(x)} images {tuple(x.shape[1:])}")
+    G, D, hist = train(x, a.epochs, out_dir=a.out)
+    torch.save(G.state_dict(), os.path.join(a.out, "generator.pt"))
+    print(f"saved samples and generator to {a.out}/")
+
+
+if __name__ == "__main__":
+    main()
