@@ -42,3 +42,15 @@ class DCGANTests(unittest.TestCase):
         self.assertEqual(tuple(x.shape), (3, 1, 28, 28)); self.assertEqual(y.tolist(), [7, 2, 1])
         self.assertAlmostEqual(float(x.max()), 1.0, places=1)
 
+    def test_training_moves_the_generator_toward_the_data(self):
+        x, _ = synthetic_digits(768, seed=2)
+        torch.manual_seed(0); before = Generator()(torch.randn(256, 100, 1, 1)).mean().item()
+        G, D, hist = train(x, epochs=6, log=lambda s: None)
+        with torch.no_grad(): after = G(torch.randn(256, 100, 1, 1)).mean().item()
+        real = x.mean().item()
+        self.assertLess(abs(after - real), abs(before - real))               # background level (mostly -1) learned
+        self.assertTrue(all(np.isfinite(h).all() for h in hist))
+
+
+if __name__ == "__main__":
+    unittest.main()
