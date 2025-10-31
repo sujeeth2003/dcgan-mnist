@@ -20,3 +20,12 @@ pixel mean real -0.71 / fake -0.72;  std real 0.60 / fake 0.61
 - **Mostly convincing, not perfect:** the classifier is confident on average (0.89), and the pixel statistics match the data closely. Looking at `samples/epoch_025.png`, many digits are clean, but some have missing or broken segments. More epochs, more data, or a lower-noise discriminator would help.
 - `samples/epoch_001.png` -> `epoch_025.png` shows the progression from noise to digits.
 
+## Run
+```bash
+pip install torch matplotlib numpy
+python -m unittest discover -s tests        # shapes, paper-style architecture (no pooling/FC, N(0,0.02) init), IDX reader, training moves G toward the data
+python train.py --epochs 25                 # synthetic digits, writes samples/
+python evaluate.py --epochs 25              # the numbers above
+python train.py --data mnist --mnist-dir data --epochs 25    # real MNIST (put train-images-idx3-ubyte[.gz] and train-labels-idx1-ubyte[.gz] in ./data)
+```
+The generator is unconditional: it cannot be asked for a specific digit (see `text-to-image-generator` for a conditional model).
